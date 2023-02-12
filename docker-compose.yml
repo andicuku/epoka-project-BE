@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  api:
+    build:
+      context: ./codebase
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./codebase:/usr/src/app
+    ports:
+      - "8010:8000"
+    env_file:
+      .env
+    command: python manage.py runserver localhost:8010
+    depends_on:
+      - db
+
+
+  db:
+    image: postgres:12-alpine
+    restart: always
+    shm_size: 1gb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${SQL_USER}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
+      POSTGRES_DB: ${SQL_DATABASE}
+      POSTGRES_PORT: ${SQL_PORT}
+
+volumes:
+  postgres_data: { }
